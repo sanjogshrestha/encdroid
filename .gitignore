@@ -1,13 +1,3 @@
-.classpath
-.project
-.cproject
-.settings
+.gradle
 bin
 gen
-obj
-proguard.cfg
-proguard-project.txt
-local.properties
-.vimrc
-cscope*
-libs/*.properties
