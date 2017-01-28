@@ -34,121 +34,121 @@ import android.view.MenuItem;
 
 public class EDPreferenceActivity extends Activity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// Display the preference fragment
-		FragmentManager mFragmentManager = getFragmentManager();
-		FragmentTransaction mFragmentTransaction = mFragmentManager
-				.beginTransaction();
-		EDPreferenceFragment mPrefsFragment = new EDPreferenceFragment();
-		mFragmentTransaction.replace(android.R.id.content, mPrefsFragment);
-		mFragmentTransaction.commit();
+        // Display the preference fragment
+        FragmentManager mFragmentManager = getFragmentManager();
+        FragmentTransaction mFragmentTransaction = mFragmentManager
+                .beginTransaction();
+        EDPreferenceFragment mPrefsFragment = new EDPreferenceFragment();
+        mFragmentTransaction.replace(android.R.id.content, mPrefsFragment);
+        mFragmentTransaction.commit();
 
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
-		setTitle(getString(R.string.settings));
-	}
+        setTitle(getString(R.string.settings));
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home: // Go back to volume list
-			Intent intent = new Intent(this, VolumeListActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);
-			break;
-		default:
-			break;
-		}
-		return true;
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: // Go back to volume list
+                Intent intent = new Intent(this, VolumeListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) { // Go back to volume list
-			Intent intent = new Intent(this, VolumeListActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) { // Go back to volume list
+            Intent intent = new Intent(this, VolumeListActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
 
-			return true;
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
-	public class EDPreferenceFragment extends PreferenceFragment implements
-			OnSharedPreferenceChangeListener {
+    public class EDPreferenceFragment extends PreferenceFragment implements
+            OnSharedPreferenceChangeListener {
 
-		// Application object
-		private EDApplication mApp;
+        // Application object
+        private EDApplication mApp;
 
-		// Logger tag
-		private final static String TAG = "EDPreferenceFragment";
+        // Logger tag
+        private final static String TAG = "EDPreferenceFragment";
 
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
 
-			setRetainInstance(true);
+            setRetainInstance(true);
 
-			addPreferencesFromResource(R.layout.preferences);
+            addPreferencesFromResource(R.layout.preferences);
 
-			mApp = (EDApplication) getApplication();
+            mApp = (EDApplication) getApplication();
 
-			SharedPreferences prefs = PreferenceManager
-					.getDefaultSharedPreferences(EDPreferenceActivity.this);
+            SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(EDPreferenceActivity.this);
 
-			adjustExtSdScreen(prefs);
-		}
+            adjustExtSdScreen(prefs);
+        }
 
-		@Override
-		public void onResume() {
-			super.onResume();
-			// Set up a listener whenever a key changes
-			getPreferenceScreen().getSharedPreferences()
-					.registerOnSharedPreferenceChangeListener(this);
-		}
+        @Override
+        public void onResume() {
+            super.onResume();
+            // Set up a listener whenever a key changes
+            getPreferenceScreen().getSharedPreferences()
+                    .registerOnSharedPreferenceChangeListener(this);
+        }
 
-		@Override
-		public void onPause() {
-			super.onPause();
-			// Unregister the listener whenever a key changes
-			getPreferenceScreen().getSharedPreferences()
-					.unregisterOnSharedPreferenceChangeListener(this);
-		}
+        @Override
+        public void onPause() {
+            super.onPause();
+            // Unregister the listener whenever a key changes
+            getPreferenceScreen().getSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(this);
+        }
 
-		private void adjustExtSdScreen(SharedPreferences prefs) {
-			Preference extSdPrefScreen = findPreference("ext_sd_prefs");
-			if (prefs.getBoolean("ext_sd_enabled", false)) {
-				Log.d(TAG, "External SD card enabled");
-				extSdPrefScreen.setEnabled(true);
-			} else {
-				Log.d(TAG, "External SD card disabled");
-				extSdPrefScreen.setEnabled(false);
-			}
-		}
+        private void adjustExtSdScreen(SharedPreferences prefs) {
+            Preference extSdPrefScreen = findPreference("ext_sd_prefs");
+            if (prefs.getBoolean("ext_sd_enabled", false)) {
+                Log.d(TAG, "External SD card enabled");
+                extSdPrefScreen.setEnabled(true);
+            } else {
+                Log.d(TAG, "External SD card disabled");
+                extSdPrefScreen.setEnabled(false);
+            }
+        }
 
-		@Override
-		public void onSharedPreferenceChanged(SharedPreferences prefs,
-				String key) {
-			if (key.equals("cache_key")) {
-				if (!prefs.getBoolean("cache_key", false)) {
-					Log.d(TAG, "Key caching disabled, clearing cached keys.");
-					// Need to clear all cached keys
-					mApp.getDbHelper().clearAllKeys();
-				} else {
-					Log.d(TAG, "Key caching enabled.");
-				}
-			} else if (key.equals("ext_sd_enabled")) {
-				adjustExtSdScreen(prefs);
-			} else if (key.equals("auto_import")) {
-				if (prefs.getBoolean("auto_import", false)) {
-					Log.d(TAG, "Auto import enabled");
-				} else {
-					Log.d(TAG, "Auto import disabled");
-				}
-			}
-		}
-	}
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                              String key) {
+            if (key.equals("cache_key")) {
+                if (!prefs.getBoolean("cache_key", false)) {
+                    Log.d(TAG, "Key caching disabled, clearing cached keys.");
+                    // Need to clear all cached keys
+                    mApp.getDbHelper().clearAllKeys();
+                } else {
+                    Log.d(TAG, "Key caching enabled.");
+                }
+            } else if (key.equals("ext_sd_enabled")) {
+                adjustExtSdScreen(prefs);
+            } else if (key.equals("auto_import")) {
+                if (prefs.getBoolean("auto_import", false)) {
+                    Log.d(TAG, "Auto import enabled");
+                } else {
+                    Log.d(TAG, "Auto import disabled");
+                }
+            }
+        }
+    }
 }

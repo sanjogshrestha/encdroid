@@ -20,37 +20,35 @@ package org.mrpdaemon.android.encdroid;
 
 import org.mrpdaemon.sec.encfs.EncFSProgressListener;
 
-import android.app.Activity;
-
 public class ProgressListener extends EncFSProgressListener {
 
-	// Task that owns this progress listener
-	private EDAsyncTask<?, ?, ?> myTask;
+    // Task that owns this progress listener
+    private EDAsyncTask<?, ?, ?> myTask;
 
-	public ProgressListener(EDAsyncTask<?, ?, ?> task) {
-		myTask = task;
-	}
+    public ProgressListener(EDAsyncTask<?, ?, ?> task) {
+        myTask = task;
+    }
 
-	@Override
-	public void handleEvent(int eventType) {
+    @Override
+    public void handleEvent(int eventType) {
 
-		switch (eventType) {
-		case ProgressListener.FILES_COUNTED_EVENT:
-			myTask.getProgress().setTotalFiles(getNumFiles());
-			myTask.updateProgress();
-			break;
-		case ProgressListener.NEW_FILE_EVENT:
-			myTask.getProgress().setCurrentFileName(getCurrentFile());
-			myTask.updateProgress();
-			break;
-		case ProgressListener.FILE_PROCESS_EVENT:
-			myTask.getProgress().incCurrentFileIdx();
-			myTask.updateProgress();
-			break;
-		case ProgressListener.OP_COMPLETE_EVENT:
-			break;
-		default:
-			break;
-		}
-	}
+        switch (eventType) {
+            case ProgressListener.FILES_COUNTED_EVENT:
+                myTask.getProgress().setTotalFiles(getNumFiles());
+                myTask.updateProgress();
+                break;
+            case ProgressListener.NEW_FILE_EVENT:
+                myTask.getProgress().setCurrentFileName(getCurrentFile());
+                myTask.updateProgress();
+                break;
+            case ProgressListener.FILE_PROCESS_EVENT:
+                myTask.getProgress().incCurrentFileIdx();
+                myTask.updateProgress();
+                break;
+            case ProgressListener.OP_COMPLETE_EVENT:
+                break;
+            default:
+                break;
+        }
+    }
 }

@@ -22,73 +22,73 @@ import org.mrpdaemon.sec.encfs.EncFSFile;
 
 public class FileChooserItem implements Comparable<FileChooserItem> {
 
-	private String name;
+    private String name;
 
-	private boolean isDirectory;
+    private boolean isDirectory;
 
-	private String path;
+    private String path;
 
-	private EncFSFile file;
+    private EncFSFile file;
 
-	private long size;
+    private long size;
 
-	public FileChooserItem(String name, boolean isDirectory, String path,
-			long size) {
-		this.name = name;
-		this.isDirectory = isDirectory;
-		this.path = path;
-		this.size = size;
-		this.file = null;
-	}
+    public FileChooserItem(String name, boolean isDirectory, String path,
+                           long size) {
+        this.name = name;
+        this.isDirectory = isDirectory;
+        this.path = path;
+        this.size = size;
+        this.file = null;
+    }
 
-	public FileChooserItem(String name, boolean isDirectory, EncFSFile file,
-			long size) {
-		this.name = name;
-		this.isDirectory = isDirectory;
-		this.path = null;
-		this.size = size;
-		this.file = file;
-	}
+    public FileChooserItem(String name, boolean isDirectory, EncFSFile file,
+                           long size) {
+        this.name = name;
+        this.isDirectory = isDirectory;
+        this.path = null;
+        this.size = size;
+        this.file = file;
+    }
 
-	/**
-	 * @return the path
-	 */
-	public String getPath() {
-		return path;
-	}
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @return the isDirectory
-	 */
-	public boolean isDirectory() {
-		return isDirectory;
-	}
+    /**
+     * @return the isDirectory
+     */
+    public boolean isDirectory() {
+        return isDirectory;
+    }
 
-	/**
-	 * @return the size
-	 */
-	public long getSize() {
-		return size;
-	}
+    /**
+     * @return the size
+     */
+    public long getSize() {
+        return size;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	@Override
-	public int compareTo(FileChooserItem arg0) {
-		return this.name.toLowerCase().compareTo(arg0.getName().toLowerCase());
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(FileChooserItem arg0) {
+        return this.name.toLowerCase().compareTo(arg0.getName().toLowerCase());
+    }
 
-	public EncFSFile getFile() {
-		return file;
-	}
+    public EncFSFile getFile() {
+        return file;
+    }
 }

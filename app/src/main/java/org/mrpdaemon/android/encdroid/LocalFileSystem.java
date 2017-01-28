@@ -18,39 +18,39 @@
 
 package org.mrpdaemon.android.encdroid;
 
-import java.io.File;
+import android.content.Context;
+import android.os.Environment;
 
 import org.mrpdaemon.sec.encfs.EncFSFileProvider;
 import org.mrpdaemon.sec.encfs.EncFSLocalFileProvider;
 
-import android.content.Context;
-import android.os.Environment;
+import java.io.File;
 
 // Class representing the internal SD card file system
 public class LocalFileSystem extends FileSystem {
 
-	public LocalFileSystem(Context context) {
-		super(null, context);
-	}
+    public LocalFileSystem(Context context) {
+        super(null, context);
+    }
 
-	@Override
-	public String getName() {
-		return mContext.getString(R.string.fs_name_local);
-	}
+    @Override
+    public String getName() {
+        return mContext.getString(R.string.fs_name_local);
+    }
 
-	@Override
-	public int getIconResId() {
-		return R.drawable.ic_fs_local;
-	}
+    @Override
+    public int getIconResId() {
+        return R.drawable.ic_fs_local;
+    }
 
-	@Override
-	public String getPathPrefix() {
-		return Environment.getExternalStorageDirectory().getAbsolutePath();
-	}
+    @Override
+    public String getPathPrefix() {
+        return Environment.getExternalStorageDirectory().getAbsolutePath();
+    }
 
-	@Override
-	public EncFSFileProvider getFileProvider(String path) {
-		return new EncFSLocalFileProvider(new File(
-				Environment.getExternalStorageDirectory(), path));
-	}
+    @Override
+    public EncFSFileProvider getFileProvider(String path) {
+        return new EncFSLocalFileProvider(new File(
+                Environment.getExternalStorageDirectory(), path));
+    }
 }

@@ -18,8 +18,6 @@
 
 package org.mrpdaemon.android.encdroid;
 
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -29,95 +27,97 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class VolumeListAdapter extends ArrayAdapter<Volume> {
 
-	Context context;
-	private int resourceId;
-	List<Volume> items;
+    Context context;
+    private int resourceId;
+    List<Volume> items;
 
-	public VolumeListAdapter(Context context, int resourceId, List<Volume> items) {
-		super(context, resourceId, items);
-		this.context = context;
-		this.resourceId = resourceId;
-		this.items = items;
-	}
+    public VolumeListAdapter(Context context, int resourceId, List<Volume> items) {
+        super(context, resourceId, items);
+        this.context = context;
+        this.resourceId = resourceId;
+        this.items = items;
+    }
 
-	public Volume getItem(int i) {
-		return items.get(i);
-	}
+    public Volume getItem(int i) {
+        return items.get(i);
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
-		if (row == null) {
-			LayoutInflater inflater = (LayoutInflater) context
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			row = inflater.inflate(resourceId, null);
-		}
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View row = convertView;
+        if (row == null) {
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            row = inflater.inflate(resourceId, null);
+        }
 
-		final Volume item = items.get(position);
+        final Volume item = items.get(position);
 
-		if (item != null) {
-			TextView volumeName = (TextView) row
-					.findViewById(R.id.volume_list_item_name);
-			ImageView volumeIcon = (ImageView) row
-					.findViewById(R.id.volume_list_item_icon);
-			ImageView fsIcon = (ImageView) row
-					.findViewById(R.id.volume_list_fs_icon);
-			TextView volumePath = (TextView) row
-					.findViewById(R.id.volume_list_item_path);
+        if (item != null) {
+            TextView volumeName = (TextView) row
+                    .findViewById(R.id.volume_list_item_name);
+            ImageView volumeIcon = (ImageView) row
+                    .findViewById(R.id.volume_list_item_icon);
+            ImageView fsIcon = (ImageView) row
+                    .findViewById(R.id.volume_list_fs_icon);
+            TextView volumePath = (TextView) row
+                    .findViewById(R.id.volume_list_item_path);
 
-			if (volumeName != null) {
-				volumeName.setText(item.getName());
-				if (!isEnabled(position)) {
-					volumeName.setTextColor(Color.LTGRAY);
-				} else {
-					volumeName.setTextColor(Color.BLACK);
-				}
-			}
+            if (volumeName != null) {
+                volumeName.setText(item.getName());
+                if (!isEnabled(position)) {
+                    volumeName.setTextColor(Color.LTGRAY);
+                } else {
+                    volumeName.setTextColor(Color.BLACK);
+                }
+            }
 
-			if (volumePath != null) {
-				volumePath.setText(item.getFileSystem().getPathPrefix()
-						+ item.getPath());
+            if (volumePath != null) {
+                volumePath.setText(item.getFileSystem().getPathPrefix()
+                        + item.getPath());
 
-				if (!isEnabled(position)) {
-					volumePath.setTextColor(Color.LTGRAY);
-				} else {
-					volumePath.setTextColor(Color.BLACK);
-				}
-			}
+                if (!isEnabled(position)) {
+                    volumePath.setTextColor(Color.LTGRAY);
+                } else {
+                    volumePath.setTextColor(Color.BLACK);
+                }
+            }
 
-			if (volumeIcon != null) {
-				if (item.isLocked()) {
-					volumeIcon.setImageResource(R.drawable.ic_locked_volume);
-				} else {
-					volumeIcon.setImageResource(R.drawable.ic_unlocked_volume);
-				}
+            if (volumeIcon != null) {
+                if (item.isLocked()) {
+                    volumeIcon.setImageResource(R.drawable.ic_locked_volume);
+                } else {
+                    volumeIcon.setImageResource(R.drawable.ic_unlocked_volume);
+                }
 
-				if (!isEnabled(position)) {
-					volumeIcon.setColorFilter(Color.LTGRAY);
-				} else {
-					volumeIcon.clearColorFilter();
-				}
-			}
+                if (!isEnabled(position)) {
+                    volumeIcon.setColorFilter(Color.LTGRAY);
+                } else {
+                    volumeIcon.clearColorFilter();
+                }
+            }
 
-			if (fsIcon != null) {
-				fsIcon.setImageResource(item.getFileSystem().getIconResId());
-			}
-		}
+            if (fsIcon != null) {
+                fsIcon.setImageResource(item.getFileSystem().getIconResId());
+            }
+        }
 
-		return row;
-	}
+        return row;
+    }
 
-	@Override
-	public boolean isEnabled(int position) {
-		final Volume item = items.get(position);
+    @Override
+    public boolean isEnabled(int position) {
+        final Volume item = items.get(position);
 
-		if ((item == null) || (item.getFileSystem() == null)) {
-			return false;
-		}
+        if ((item == null) || (item.getFileSystem() == null)) {
+            return false;
+        }
 
-		return item.getFileSystem().isEnabled();
-	}
+        return item.getFileSystem().isEnabled();
+    }
 
 }

@@ -18,49 +18,49 @@
 
 package org.mrpdaemon.android.encdroid;
 
-import java.io.File;
-
-import org.mrpdaemon.sec.encfs.EncFSFileProvider;
-import org.mrpdaemon.sec.encfs.EncFSLocalFileProvider;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.mrpdaemon.sec.encfs.EncFSFileProvider;
+import org.mrpdaemon.sec.encfs.EncFSLocalFileProvider;
+
+import java.io.File;
+
 // Class representing the internal SD card file system
 public class ExtSDFileSystem extends FileSystem {
 
-	SharedPreferences mPrefs;
+    SharedPreferences mPrefs;
 
-	public ExtSDFileSystem(Context context) {
-		super(null, context);
+    public ExtSDFileSystem(Context context) {
+        super(null, context);
 
-		mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-	}
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return mPrefs.getBoolean("ext_sd_enabled", false);
-	}
+    @Override
+    public boolean isEnabled() {
+        return mPrefs.getBoolean("ext_sd_enabled", false);
+    }
 
-	@Override
-	public String getName() {
-		return mContext.getString(R.string.fs_name_ext_sd);
-	}
+    @Override
+    public String getName() {
+        return mContext.getString(R.string.fs_name_ext_sd);
+    }
 
-	@Override
-	public int getIconResId() {
-		return R.drawable.ic_fs_ext_sd;
-	}
+    @Override
+    public int getIconResId() {
+        return R.drawable.ic_fs_ext_sd;
+    }
 
-	@Override
-	public String getPathPrefix() {
-		return "[" + mContext.getString(R.string.ext_sd_vol_prefix_str) + "]:";
-	}
+    @Override
+    public String getPathPrefix() {
+        return "[" + mContext.getString(R.string.ext_sd_vol_prefix_str) + "]:";
+    }
 
-	@Override
-	public EncFSFileProvider getFileProvider(String path) {
-		return new EncFSLocalFileProvider(new File(mPrefs.getString(
-				"ext_sd_location", "/mnt/external1"), path));
-	}
+    @Override
+    public EncFSFileProvider getFileProvider(String path) {
+        return new EncFSLocalFileProvider(new File(mPrefs.getString(
+                "ext_sd_location", "/mnt/external1"), path));
+    }
 }

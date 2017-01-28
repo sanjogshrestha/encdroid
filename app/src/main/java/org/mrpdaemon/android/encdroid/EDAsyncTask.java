@@ -23,159 +23,159 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 public abstract class EDAsyncTask<Params, Progress, Result> extends
-		AsyncTask<Params, Progress, Result> {
+        AsyncTask<Params, Progress, Result> {
 
-	// TaskFragment we're associated with
-	protected TaskFragment mTaskFragment;
+    // TaskFragment we're associated with
+    protected TaskFragment mTaskFragment;
 
-	// Associated progress dialog
-	private ProgressDialog mProgressDialog = null;
+    // Associated progress dialog
+    private ProgressDialog mProgressDialog = null;
 
-	// Progress object to be updated by the task
-	protected TaskProgress mTaskProgress;
+    // Progress object to be updated by the task
+    protected TaskProgress mTaskProgress;
 
-	// Progress object that reflects what's currently displayed
-	private TaskProgress mDisplayedTaskProgress;
+    // Progress object that reflects what's currently displayed
+    private TaskProgress mDisplayedTaskProgress;
 
-	// Progress dialog parameters set by subclass constructor
+    // Progress dialog parameters set by subclass constructor
 
-	// Title of the progress dialog
-	protected String mProgressDialogTitle = null;
+    // Title of the progress dialog
+    protected String mProgressDialogTitle = null;
 
-	// Resource ID for the progress dialog message string
-	protected int mProgressDialogMsgResId = -1;
+    // Resource ID for the progress dialog message string
+    protected int mProgressDialogMsgResId = -1;
 
-	// Whether we're working on multiple jobs
-	protected boolean mProgressDialogMultiJob = false;
+    // Whether we're working on multiple jobs
+    protected boolean mProgressDialogMultiJob = false;
 
-	// Whether we're working on multiple files
-	protected boolean mProgressDialogMultiFile = false;
+    // Whether we're working on multiple files
+    protected boolean mProgressDialogMultiFile = false;
 
-	// Just a spinner dialog
-	protected boolean mProgressDialogSpinnerOnly = false;
+    // Just a spinner dialog
+    protected boolean mProgressDialogSpinnerOnly = false;
 
-	public EDAsyncTask(TaskFragment fragment) {
-		this.mTaskFragment = fragment;
-		this.mTaskProgress = new TaskProgress();
-		this.mDisplayedTaskProgress = new TaskProgress();
-	}
+    public EDAsyncTask(TaskFragment fragment) {
+        mTaskFragment = fragment;
+        mTaskProgress = new TaskProgress();
+        mDisplayedTaskProgress = new TaskProgress();
+    }
 
-	public TaskFragment getFragment() {
-		return mTaskFragment;
-	}
+    public TaskFragment getFragment() {
+        return mTaskFragment;
+    }
 
-	public TaskProgress getProgress() {
-		return mTaskProgress;
-	}
+    public TaskProgress getProgress() {
+        return mTaskProgress;
+    }
 
-	public void setProgressDialog(ProgressDialog progressDialog) {
-		this.mProgressDialog = progressDialog;
+    public void setProgressDialog(ProgressDialog progressDialog) {
+        mProgressDialog = progressDialog;
 
-		if (progressDialog == null) {
-			// Reset displayed progress
-			mDisplayedTaskProgress = new TaskProgress();
-		}
-	}
+        if (progressDialog == null) {
+            // Reset displayed progress
+            mDisplayedTaskProgress = new TaskProgress();
+        }
+    }
 
-	// Notify that progress is updated
-	public void updateProgress() {
-		publishProgress((Progress[]) null);
-	}
+    // Notify that progress is updated
+    public void updateProgress() {
+        publishProgress((Progress[]) null);
+    }
 
-	// Method for subclasses to create ProgressDialog
-	protected ProgressDialog createProgressDialog(Activity activity) {
-		ProgressDialog dialog = new ProgressDialog(activity);
+    // Method for subclasses to create ProgressDialog
+    protected ProgressDialog createProgressDialog(Activity activity) {
+        ProgressDialog dialog = new ProgressDialog(activity);
 
-		if (mProgressDialogMsgResId != -1) {
-			dialog.setMessage(activity.getString(mProgressDialogMsgResId));
-		}
+        if (mProgressDialogMsgResId != -1) {
+            dialog.setMessage(activity.getString(mProgressDialogMsgResId));
+        }
 
-		if (!mProgressDialogSpinnerOnly) {
-			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		}
+        if (!mProgressDialogSpinnerOnly) {
+            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        }
 
-		dialog.setTitle(mProgressDialogTitle);
-		dialog.setCancelable(false);
+        dialog.setTitle(mProgressDialogTitle);
+        dialog.setCancelable(false);
 
-		return dialog;
-	}
+        return dialog;
+    }
 
-	/*
-	 * Called after updateProgress() -> publishProgress() from the UI thread.
-	 * 
-	 * Implements generic way to update the various types of progress dialogs
-	 */
-	@Override
-	protected void onProgressUpdate(Progress... values) {
-		super.onProgressUpdate(values);
+    /*
+     * Called after updateProgress() -> publishProgress() from the UI thread.
+     *
+     * Implements generic way to update the various types of progress dialogs
+     */
+    @Override
+    protected void onProgressUpdate(Progress... values) {
+        super.onProgressUpdate(values);
 
-		if (mProgressDialog != null) {
+        if (mProgressDialog != null) {
 
-			// Message string
-			if ((mDisplayedTaskProgress.getCurrentJob() != mTaskProgress
-					.getCurrentJob())
-					|| (mDisplayedTaskProgress.getNumJobs() != mTaskProgress
-							.getNumJobs())
-					|| (mDisplayedTaskProgress.getCurrentFileName() != mTaskProgress
-							.getCurrentFileName())) {
-				String messageString = "";
+            // Message string
+            if ((mDisplayedTaskProgress.getCurrentJob() != mTaskProgress
+                    .getCurrentJob())
+                    || (mDisplayedTaskProgress.getNumJobs() != mTaskProgress
+                    .getNumJobs())
+                    || (mDisplayedTaskProgress.getCurrentFileName() != mTaskProgress
+                    .getCurrentFileName())) {
+                String messageString = "";
 
-				if (mProgressDialogMultiJob) {
-					messageString += "[" + mTaskProgress.getCurrentJob() + "/"
-							+ mTaskProgress.getNumJobs() + "]\n";
-					mDisplayedTaskProgress.setCurrentJob(mTaskProgress
-							.getCurrentJob());
-					mDisplayedTaskProgress.setNumJobs(mTaskProgress
-							.getNumJobs());
-				}
+                if (mProgressDialogMultiJob) {
+                    messageString += "[" + mTaskProgress.getCurrentJob() + "/"
+                            + mTaskProgress.getNumJobs() + "]\n";
+                    mDisplayedTaskProgress.setCurrentJob(mTaskProgress
+                            .getCurrentJob());
+                    mDisplayedTaskProgress.setNumJobs(mTaskProgress
+                            .getNumJobs());
+                }
 
-				if (!mProgressDialogSpinnerOnly) {
-					if (mProgressDialogMsgResId != -1) {
-						messageString += String.format(mTaskFragment
-								.getString(mProgressDialogMsgResId),
-								mTaskProgress.getCurrentFileName());
-					}
-					mDisplayedTaskProgress.setCurrentFileName(mTaskProgress
-							.getCurrentFileName());
-				}
+                if (!mProgressDialogSpinnerOnly) {
+                    if (mProgressDialogMsgResId != -1) {
+                        messageString += String.format(mTaskFragment
+                                        .getString(mProgressDialogMsgResId),
+                                mTaskProgress.getCurrentFileName());
+                    }
+                    mDisplayedTaskProgress.setCurrentFileName(mTaskProgress
+                            .getCurrentFileName());
+                }
 
-				mProgressDialog.setMessage(messageString);
-			}
+                mProgressDialog.setMessage(messageString);
+            }
 
-			// Max progress
-			if ((mDisplayedTaskProgress.getTotalFiles() != mTaskProgress
-					.getTotalFiles())
-					|| (mDisplayedTaskProgress.getTotalBytes() != mTaskProgress
-							.getTotalBytes())) {
-				if (mProgressDialogMultiFile) {
-					mProgressDialog.setMax(mTaskProgress.getTotalFiles());
-					mDisplayedTaskProgress.setTotalFiles(mTaskProgress
-							.getTotalFiles());
-				} else {
-					mProgressDialog.setMax(mTaskProgress.getTotalBytes());
-					mDisplayedTaskProgress.setTotalBytes(mTaskProgress
-							.getTotalBytes());
-				}
-			}
+            // Max progress
+            if ((mDisplayedTaskProgress.getTotalFiles() != mTaskProgress
+                    .getTotalFiles())
+                    || (mDisplayedTaskProgress.getTotalBytes() != mTaskProgress
+                    .getTotalBytes())) {
+                if (mProgressDialogMultiFile) {
+                    mProgressDialog.setMax(mTaskProgress.getTotalFiles());
+                    mDisplayedTaskProgress.setTotalFiles(mTaskProgress
+                            .getTotalFiles());
+                } else {
+                    mProgressDialog.setMax(mTaskProgress.getTotalBytes());
+                    mDisplayedTaskProgress.setTotalBytes(mTaskProgress
+                            .getTotalBytes());
+                }
+            }
 
-			// Progress
-			if ((mDisplayedTaskProgress.getCurrentFileIdx() != mTaskProgress
-					.getCurrentFileIdx())
-					|| (mDisplayedTaskProgress.getCurrentBytes() != mTaskProgress
-							.getCurrentBytes())) {
-				if (mProgressDialogMultiFile) {
-					mProgressDialog.setProgress(mTaskProgress
-							.getCurrentFileIdx());
-					mDisplayedTaskProgress.setCurrentFileIdx(mTaskProgress
-							.getCurrentFileIdx());
-				} else {
-					mProgressDialog
-							.setProgress(mTaskProgress.getCurrentBytes());
-					mDisplayedTaskProgress.setCurrentBytes(mTaskProgress
-							.getCurrentBytes());
-				}
-			}
-		}
-	}
+            // Progress
+            if ((mDisplayedTaskProgress.getCurrentFileIdx() != mTaskProgress
+                    .getCurrentFileIdx())
+                    || (mDisplayedTaskProgress.getCurrentBytes() != mTaskProgress
+                    .getCurrentBytes())) {
+                if (mProgressDialogMultiFile) {
+                    mProgressDialog.setProgress(mTaskProgress
+                            .getCurrentFileIdx());
+                    mDisplayedTaskProgress.setCurrentFileIdx(mTaskProgress
+                            .getCurrentFileIdx());
+                } else {
+                    mProgressDialog
+                            .setProgress(mTaskProgress.getCurrentBytes());
+                    mDisplayedTaskProgress.setCurrentBytes(mTaskProgress
+                            .getCurrentBytes());
+                }
+            }
+        }
+    }
 
 }

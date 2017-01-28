@@ -22,106 +22,105 @@ import org.mrpdaemon.sec.encfs.EncFSVolume;
 
 public class Volume {
 
-	// Volume name
-	private String name;
+    // Volume name
+    private String name;
 
-	// Volume path
-	private String path;
+    // Volume path
+    private String path;
 
-	// Volume file system
-	private FileSystem fileSystem;
+    // Volume file system
+    private FileSystem fileSystem;
 
-	// Whether volume is locked or not
-	private boolean isLocked;
+    // Whether volume is locked or not
+    private boolean isLocked;
 
-	// EncFS volume associated with this volume
-	private EncFSVolume volume;
-	
-	private String customConfigPath=null;
+    // EncFS volume associated with this volume
+    private EncFSVolume volume;
 
-	public Volume(String name, String path, FileSystem fileSystem) {
-		super();
-		this.name = name;
-		this.path = path;
-		this.customConfigPath=null;
-		this.fileSystem = fileSystem;
-		this.isLocked = true;
-		this.volume = null;
-	}
-	
-	public Volume(String name, String path, String configPath, FileSystem fileSystem) {
-		super();
-		this.name = name;
-		this.path = path;
-		this.customConfigPath=configPath;
-		this.fileSystem = fileSystem;
-		this.isLocked = true;
-		this.volume = null;
-	}
+    private String customConfigPath = null;
 
-	// Unlock the volume by passing in an EncFSVolume instance
-	public void unlock(EncFSVolume volume) {
-		if (this.isLocked) {
-			this.volume = volume;
-			this.isLocked = false;
-		}
-	}
+    public Volume(String name, String path, FileSystem fileSystem) {
+        super();
+        this.name = name;
+        this.path = path;
+        this.customConfigPath = null;
+        this.fileSystem = fileSystem;
+        this.isLocked = true;
+        this.volume = null;
+    }
 
-	// Lock the volume
-	public void lock() {
-		if (!this.isLocked) {
-			this.volume = null;
-			this.isLocked = true;
-		}
-	}
+    public Volume(String name, String path, String configPath, FileSystem fileSystem) {
+        super();
+        this.name = name;
+        this.path = path;
+        this.customConfigPath = configPath;
+        this.fileSystem = fileSystem;
+        this.isLocked = true;
+        this.volume = null;
+    }
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    // Unlock the volume by passing in an EncFSVolume instance
+    public void unlock(EncFSVolume volume) {
+        if (this.isLocked) {
+            this.volume = volume;
+            this.isLocked = false;
+        }
+    }
 
-	/**
-	 * @param name
-	 *            the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    // Lock the volume
+    public void lock() {
+        if (!this.isLocked) {
+            this.volume = null;
+            this.isLocked = true;
+        }
+    }
 
-	/**
-	 * @return the path
-	 */
-	public String getPath() {
-		return path;
-	}
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @return the type
-	 */
-	public FileSystem getFileSystem() {
-		return fileSystem;
-	}
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * @return the isLocked
-	 */
-	public boolean isLocked() {
-		return isLocked;
-	}
-	
-	/**
-	 * @return the customConfigPath
-	 */
-	public String getCustomConfigPath() {
-		return customConfigPath;
-	}
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
 
-	/**
-	 * @return the volume
-	 */
-	public EncFSVolume getVolume() {
-		return volume;
-	}
+    /**
+     * @return the type
+     */
+    public FileSystem getFileSystem() {
+        return fileSystem;
+    }
+
+    /**
+     * @return the isLocked
+     */
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    /**
+     * @return the customConfigPath
+     */
+    public String getCustomConfigPath() {
+        return customConfigPath;
+    }
+
+    /**
+     * @return the volume
+     */
+    public EncFSVolume getVolume() {
+        return volume;
+    }
 }

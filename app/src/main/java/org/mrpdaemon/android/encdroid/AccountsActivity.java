@@ -34,178 +34,178 @@ import android.view.MenuItem;
 
 public class AccountsActivity extends Activity {
 
-	private final String FRAGMENT_TAG = "AccountFragment";
+    private final String FRAGMENT_TAG = "AccountFragment";
 
-	private final String LOG_TAG = "AccountsActivity";
+    private final String LOG_TAG = "AccountsActivity";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// Display the accounts fragment
-		FragmentManager mFragmentManager = getFragmentManager();
-		FragmentTransaction mFragmentTransaction = mFragmentManager
-				.beginTransaction();
-		EDAccountsFragment mAccountsFragment = new EDAccountsFragment();
-		mFragmentTransaction.replace(android.R.id.content, mAccountsFragment,
-				FRAGMENT_TAG);
-		mFragmentTransaction.commit();
+        // Display the accounts fragment
+        FragmentManager mFragmentManager = getFragmentManager();
+        FragmentTransaction mFragmentTransaction = mFragmentManager
+                .beginTransaction();
+        EDAccountsFragment mAccountsFragment = new EDAccountsFragment();
+        mFragmentTransaction.replace(android.R.id.content, mAccountsFragment,
+                FRAGMENT_TAG);
+        mFragmentTransaction.commit();
 
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
-		setTitle(getString(R.string.settings));
-	}
+        setTitle(getString(R.string.settings));
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			// Go back to volume list
-			Intent intent = new Intent(this, VolumeListActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);
-			break;
-		default:
-			break;
-		}
-		return true;
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Go back to volume list
+                Intent intent = new Intent(this, VolumeListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			// Go back to volume list
-			Intent intent = new Intent(this, VolumeListActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            // Go back to volume list
+            Intent intent = new Intent(this, VolumeListActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
 
-			return true;
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-		// Feed the activity result into the fragment
-		EDAccountsFragment mAccountsFragment = (EDAccountsFragment) getFragmentManager()
-				.findFragmentByTag(FRAGMENT_TAG);
-		try {
-			mAccountsFragment.onActivityResult(requestCode, resultCode, data);
-		} catch (Exception e) {
-			Log.e(LOG_TAG, e.getMessage());
-		}
-	}
+        // Feed the activity result into the fragment
+        EDAccountsFragment mAccountsFragment = (EDAccountsFragment) getFragmentManager()
+                .findFragmentByTag(FRAGMENT_TAG);
+        try {
+            mAccountsFragment.onActivityResult(requestCode, resultCode, data);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage());
+        }
+    }
 
-	public class EDAccountsFragment extends ListFragment {
+    public class EDAccountsFragment extends ListFragment {
 
-		// Application object
-		private EDApplication mApp;
+        // Application object
+        private EDApplication mApp;
 
-		// List adapter
-		private AccountListAdapter mAdapter;
+        // List adapter
+        private AccountListAdapter mAdapter;
 
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
 
-			setRetainInstance(true);
+            setRetainInstance(true);
 
-			mApp = (EDApplication) getApplication();
+            mApp = (EDApplication) getApplication();
 
-			setContentView(R.layout.account_list);
-			setTitle(getString(R.string.accounts));
+            setContentView(R.layout.account_list);
+            setTitle(getString(R.string.accounts));
 
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setDisplayHomeAsUpEnabled(true);
 
-			refreshList();
-		}
+            refreshList();
+        }
 
-		private void refreshList() {
-			if (mAdapter == null) {
-				mAdapter = new AccountListAdapter(this.getActivity(),
-						R.layout.account_list_item, mApp.getAccountList());
-				this.setListAdapter(mAdapter);
-			} else {
-				mAdapter.notifyDataSetChanged();
-			}
-		}
+        private void refreshList() {
+            if (mAdapter == null) {
+                mAdapter = new AccountListAdapter(this.getActivity(),
+                        R.layout.account_list_item, mApp.getAccountList());
+                this.setListAdapter(mAdapter);
+            } else {
+                mAdapter.notifyDataSetChanged();
+            }
+        }
 
-		public class AccountsErrorDialogFragment extends DialogFragment {
+        public class AccountsErrorDialogFragment extends DialogFragment {
 
-			private String mErrorText;
+            private String mErrorText;
 
-			public AccountsErrorDialogFragment(String errorText) {
-				super();
-				mErrorText = errorText;
-			}
+            public AccountsErrorDialogFragment(String errorText) {
+                super();
+                mErrorText = errorText;
+            }
 
-			@Override
-			public Dialog onCreateDialog(Bundle savedInstanceState) {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-				AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
-						getActivity());
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
+                        getActivity());
 
-				alertBuilder.setMessage(mErrorText);
-				alertBuilder.setCancelable(false);
-				alertBuilder.setNeutralButton(getString(R.string.btn_ok_str),
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								dialog.dismiss();
-							}
-						});
-				return alertBuilder.create();
+                alertBuilder.setMessage(mErrorText);
+                alertBuilder.setCancelable(false);
+                alertBuilder.setNeutralButton(getString(R.string.btn_ok_str),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int whichButton) {
+                                dialog.dismiss();
+                            }
+                        });
+                return alertBuilder.create();
 
-			}
-		}
+            }
+        }
 
-		@Override
-		public void onStart() {
-			super.onStart();
-			refreshList();
-		}
+        @Override
+        public void onStart() {
+            super.onStart();
+            refreshList();
+        }
 
-		private void showErrorDialog(String errorText) {
-			new AccountsErrorDialogFragment(errorText).show(
-					getFragmentManager(), "errorDialog");
-		}
+        private void showErrorDialog(String errorText) {
+            new AccountsErrorDialogFragment(errorText).show(
+                    getFragmentManager(), "errorDialog");
+        }
 
-		@Override
-		public void onActivityResult(int requestCode, int resultCode,
-				Intent data) {
-			super.onActivityResult(requestCode, resultCode, data);
+        @Override
+        public void onActivityResult(int requestCode, int resultCode,
+                                     Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
 
-			for (Account account : mApp.getAccountList()) {
-				if (account.isLinkOrAuthInProgress()) {
-					if (account.forwardActivityResult(AccountsActivity.this,
-							requestCode, resultCode, data) == true) {
-						refreshList();
-					} else {
-						showErrorDialog(String.format(
-								getString(R.string.account_login_error),
-								account.getName()));
-					}
-				}
-			}
-		}
+            for (Account account : mApp.getAccountList()) {
+                if (account.isLinkOrAuthInProgress()) {
+                    if (account.forwardActivityResult(AccountsActivity.this,
+                            requestCode, resultCode, data) == true) {
+                        refreshList();
+                    } else {
+                        showErrorDialog(String.format(
+                                getString(R.string.account_login_error),
+                                account.getName()));
+                    }
+                }
+            }
+        }
 
-		@Override
-		public void onResume() {
-			super.onResume();
+        @Override
+        public void onResume() {
+            super.onResume();
 
-			for (Account account : mApp.getAccountList()) {
-				if (account.isLinkOrAuthInProgress()) {
-					if (account.resumeLinkOrAuth() == true) {
-						refreshList();
-					} else {
-						showErrorDialog(String.format(
-								getString(R.string.account_login_error),
-								account.getName()));
-					}
-				}
-			}
-		}
-	}
+            for (Account account : mApp.getAccountList()) {
+                if (account.isLinkOrAuthInProgress()) {
+                    if (account.resumeLinkOrAuth() == true) {
+                        refreshList();
+                    } else {
+                        showErrorDialog(String.format(
+                                getString(R.string.account_login_error),
+                                account.getName()));
+                    }
+                }
+            }
+        }
+    }
 }

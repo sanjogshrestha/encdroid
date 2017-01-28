@@ -22,14 +22,14 @@ import android.util.Log;
 
 public class Logger {
 
-	// Safely log an exception
-	public static void logException(String tag, Exception exception) {
-		if (exception.getMessage() != null) {
-			Log.e(tag, exception.getMessage());
-		} else {
-			Log.e(tag, exception.toString());
-		}
+    // Safely log an exception
+    public static void logException(String tag, Exception exception) {
+        if (exception.getMessage() != null) {
+            Log.e(tag, exception.getMessage());
+        } else {
+            Log.e(tag, exception.toString());
+        }
 
-		exception.printStackTrace();
-	}
+        exception.printStackTrace();
+    }
 }

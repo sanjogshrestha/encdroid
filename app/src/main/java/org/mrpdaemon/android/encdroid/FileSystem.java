@@ -18,59 +18,59 @@
 
 package org.mrpdaemon.android.encdroid;
 
-import org.mrpdaemon.sec.encfs.EncFSFileProvider;
-
 import android.content.Context;
+
+import org.mrpdaemon.sec.encfs.EncFSFileProvider;
 
 // Base class for all file system types
 public abstract class FileSystem {
 
-	// Activity context
-	protected Context mContext;
+    // Activity context
+    protected Context mContext;
 
-	// Account associated with this file system
-	private Account mAccount;
+    // Account associated with this file system
+    private Account mAccount;
 
-	// Logger tag
-	private static final String TAG = "FileSystem";
+    // Logger tag
+    private static final String TAG = "FileSystem";
 
-	// Create a new FileSystem object with an Account
-	public FileSystem(Account account, Context context) {
-		this.mContext = context;
-		this.mAccount = account;
-	}
+    // Create a new FileSystem object with an Account
+    public FileSystem(Account account, Context context) {
+        mContext = context;
+        mAccount = account;
+    }
 
-	// Whether this file system is enabled
-	public boolean isEnabled() {
-		return true;
-	}
+    // Whether this file system is enabled
+    public boolean isEnabled() {
+        return true;
+    }
 
-	// Return the name of this file system
-	public abstract String getName();
+    // Return the name of this file system
+    public abstract String getName();
 
-	// Return an icon resource for this file system
-	public abstract int getIconResId();
+    // Return an icon resource for this file system
+    public abstract int getIconResId();
 
-	// Prefix to put in front of paths
-	public abstract String getPathPrefix();
+    // Prefix to put in front of paths
+    public abstract String getPathPrefix();
 
-	// Return the account used with this file system
-	public Account getAccount() {
-		return mAccount;
-	}
+    // Return the account used with this file system
+    public Account getAccount() {
+        return mAccount;
+    }
 
-	// Return a file provider for this file system at a given path
-	public EncFSFileProvider getFileProvider(String path) {
-		if (mAccount != null) {
-			if (mAccount.isLinked() && mAccount.isAuthenticated()) {
-				return mAccount.getFileProvider(path);
-			} else {
-				if (mAccount.linkOrAuthIfNeeded(mContext, TAG)) {
-					return mAccount.getFileProvider(path);
-				}
-			}
-		}
+    // Return a file provider for this file system at a given path
+    public EncFSFileProvider getFileProvider(String path) {
+        if (mAccount != null) {
+            if (mAccount.isLinked() && mAccount.isAuthenticated()) {
+                return mAccount.getFileProvider(path);
+            } else {
+                if (mAccount.linkOrAuthIfNeeded(mContext, TAG)) {
+                    return mAccount.getFileProvider(path);
+                }
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

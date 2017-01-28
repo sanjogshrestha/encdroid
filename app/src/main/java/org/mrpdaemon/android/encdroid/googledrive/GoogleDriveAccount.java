@@ -18,23 +18,6 @@
 
 package org.mrpdaemon.android.encdroid.googledrive;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import org.mrpdaemon.android.encdroid.Account;
-import org.mrpdaemon.android.encdroid.EDApplication;
-import org.mrpdaemon.android.encdroid.Logger;
-import org.mrpdaemon.android.encdroid.R;
-import org.mrpdaemon.sec.encfs.EncFSFileProvider;
-
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
-
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -45,275 +28,294 @@ import android.content.SharedPreferences.Editor;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
+
+import org.mrpdaemon.android.encdroid.Account;
+import org.mrpdaemon.android.encdroid.EDApplication;
+import org.mrpdaemon.android.encdroid.Logger;
+import org.mrpdaemon.android.encdroid.R;
+import org.mrpdaemon.sec.encfs.EncFSFileProvider;
+
+import java.io.IOException;
+import java.util.Arrays;
+
 public class GoogleDriveAccount extends Account {
 
-	// Activity request codes
-	public static final int REQUEST_ACCOUNT_PICKER = 31;
-	public static final int REQUEST_AUTH_TOKEN = 32;
+    // Activity request codes
+    public static final int REQUEST_ACCOUNT_PICKER = 31;
+    public static final int REQUEST_AUTH_TOKEN = 32;
 
-	// Preference keys
-	private final static String PREFS_KEY = "google_drive_prefs";
-	private final static String PREF_LINKED = "is_linked";
-	private final static String PREF_ACCOUNT_NAME = "user_name";
+    // Preference keys
+    private final static String PREFS_KEY = "google_drive_prefs";
+    private final static String PREF_LINKED = "is_linked";
+    private final static String PREF_ACCOUNT_NAME = "user_name";
 
-	// Login toast type
-	private static enum LoginResult {
-		OK, FAILED, NO_PLAY_SERVICES
-	};
+    // Login toast type
+    private static enum LoginResult {
+        OK, FAILED, NO_PLAY_SERVICES
+    }
 
-	// Logger tag
-	private final static String TAG = "GoogleDriveAccount";
+    ;
 
-	// Whether we're linked to an account
-	private boolean linked;
+    // Logger tag
+    private final static String TAG = "GoogleDriveAccount";
 
-	// Whether link is in progress
-	private boolean linkInProgress;
+    // Whether we're linked to an account
+    private boolean linked;
 
-	// Whether authentication is in progress
-	private boolean authInProgress;
+    // Whether link is in progress
+    private boolean linkInProgress;
 
-	// Whether we're authenticated
-	private boolean authenticated;
+    // Whether authentication is in progress
+    private boolean authInProgress;
 
-	// Saved preferences
-	private SharedPreferences mPrefs;
+    // Whether we're authenticated
+    private boolean authenticated;
 
-	// Account name
-	private String accountName = null;
+    // Saved preferences
+    private SharedPreferences mPrefs;
 
-	// Credential object
-	private GoogleAccountCredential credential = null;
+    // Account name
+    private String accountName = null;
 
-	// Drive API object
-	private Drive driveService = null;
+    // Credential object
+    private GoogleAccountCredential credential = null;
 
-	// Create drive service
-	private void createDriveService(String accountName) {
-		credential.setSelectedAccountName(accountName);
+    // Drive API object
+    private Drive driveService = null;
 
-		driveService = new Drive.Builder(AndroidHttp.newCompatibleTransport(),
-				new GsonFactory(), credential).build();
+    // Create drive service
+    private void createDriveService(String accountName) {
+        credential.setSelectedAccountName(accountName);
 
-		Log.v(TAG, "Drive service created: " + driveService.toString());
-	}
+        driveService = new Drive.Builder(AndroidHttp.newCompatibleTransport(),
+                new GsonFactory(), credential).build();
 
-	// Show toast when logged in
-	private void showLoginToast(final Activity activity,
-			final LoginResult result) {
-		if (activity != null) {
-			activity.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					int stringId = 0;
-					switch (result) {
-					case OK:
-						stringId = R.string.google_drive_login;
-						break;
-					case FAILED:
-						stringId = R.string.google_drive_login_failed;
-						break;
-					case NO_PLAY_SERVICES:
-						stringId = R.string.google_drive_no_play_services;
-						break;
-					default:
-						stringId = 0;
-						break;
-					}
-					Toast.makeText(activity, activity.getString(stringId),
-							Toast.LENGTH_SHORT).show();
-				}
-			});
-		}
-	}
+        Log.v(TAG, "Drive service created: " + driveService.toString());
+    }
 
-	// Kick off authentication thread
-	private void startAuthThread(final Activity activity) {
+    // Show toast when logged in
+    private void showLoginToast(final Activity activity,
+                                final LoginResult result) {
+        if (activity != null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int stringId = 0;
+                    switch (result) {
+                        case OK:
+                            stringId = R.string.google_drive_login;
+                            break;
+                        case FAILED:
+                            stringId = R.string.google_drive_login_failed;
+                            break;
+                        case NO_PLAY_SERVICES:
+                            stringId = R.string.google_drive_no_play_services;
+                            break;
+                        default:
+                            stringId = 0;
+                            break;
+                    }
+                    Toast.makeText(activity, activity.getString(stringId),
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
 
-		authInProgress = true;
+    // Kick off authentication thread
+    private void startAuthThread(final Activity activity) {
 
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					credential.getToken();
+        authInProgress = true;
 
-					// Do an about request to test if the API works
-					driveService.about().get().execute();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    credential.getToken();
 
-					Log.v(TAG, "Already authenticated to Google API");
-					showLoginToast(activity, LoginResult.OK);
-					authenticated = true;
-				} catch (UserRecoverableAuthException e) {
-					Logger.logException(TAG, e);
-					if (activity != null) {
-						activity.startActivityForResult(e.getIntent(),
-								REQUEST_AUTH_TOKEN);
-					}
-				} catch (IOException e) {
-					if (activity != null) {
-						showLoginToast(activity, LoginResult.FAILED);
-					}
-					Logger.logException(TAG, e);
-				} catch (GoogleAuthException e) {
-					if (activity != null) {
-						showLoginToast(activity, LoginResult.FAILED);
-					}
-					Logger.logException(TAG, e);
-				} finally {
-					authInProgress = false;
-				}
-			}
-		});
+                    // Do an about request to test if the API works
+                    driveService.about().get().execute();
 
-		thread.start();
-	}
+                    Log.v(TAG, "Already authenticated to Google API");
+                    showLoginToast(activity, LoginResult.OK);
+                    authenticated = true;
+                } catch (UserRecoverableAuthException e) {
+                    Logger.logException(TAG, e);
+                    if (activity != null) {
+                        activity.startActivityForResult(e.getIntent(),
+                                REQUEST_AUTH_TOKEN);
+                    }
+                } catch (IOException e) {
+                    if (activity != null) {
+                        showLoginToast(activity, LoginResult.FAILED);
+                    }
+                    Logger.logException(TAG, e);
+                } catch (GoogleAuthException e) {
+                    if (activity != null) {
+                        showLoginToast(activity, LoginResult.FAILED);
+                    }
+                    Logger.logException(TAG, e);
+                } finally {
+                    authInProgress = false;
+                }
+            }
+        });
 
-	public GoogleDriveAccount(EDApplication app) {
-		mPrefs = app.getSharedPreferences(PREFS_KEY, 0);
+        thread.start();
+    }
 
-		linkInProgress = false;
-		authInProgress = false;
-		authenticated = false;
+    public GoogleDriveAccount(EDApplication app) {
+        mPrefs = app.getSharedPreferences(PREFS_KEY, 0);
 
-		credential = GoogleAccountCredential.usingOAuth2(
-				app.getApplicationContext(), Arrays.asList(DriveScopes.DRIVE));
+        linkInProgress = false;
+        authInProgress = false;
+        authenticated = false;
 
-		// Figure out whether we're linked to an account
-		linked = mPrefs.getBoolean(PREF_LINKED, false);
-		if (linked) {
-			accountName = mPrefs.getString(PREF_ACCOUNT_NAME, null);
+        credential = GoogleAccountCredential.usingOAuth2(
+                app.getApplicationContext(), Arrays.asList(DriveScopes.DRIVE));
 
-			// Kick off authentication thread
-			createDriveService(accountName);
-			startAuthThread(null);
-		}
-	}
+        // Figure out whether we're linked to an account
+        linked = mPrefs.getBoolean(PREF_LINKED, false);
+        if (linked) {
+            accountName = mPrefs.getString(PREF_ACCOUNT_NAME, null);
 
-	@Override
-	public String getName() {
-		return "Google Drive";
-	}
+            // Kick off authentication thread
+            createDriveService(accountName);
+            startAuthThread(null);
+        }
+    }
 
-	@Override
-	public int getIconResId() {
-		return R.drawable.ic_google_drive;
-	}
+    @Override
+    public String getName() {
+        return "Google Drive";
+    }
 
-	@Override
-	public boolean isLinked() {
-		return linked;
-	}
+    @Override
+    public int getIconResId() {
+        return R.drawable.ic_google_drive;
+    }
 
-	@Override
-	public boolean isAuthenticated() {
-		return authenticated;
-	}
+    @Override
+    public boolean isLinked() {
+        return linked;
+    }
 
-	@Override
-	public void startLinkOrAuth(Context context) {
-		Activity activity = null;
+    @Override
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
 
-		// We might be called from a non-Activity context, so safely dereference
-		if (context instanceof Activity) {
-			activity = (Activity) context;
-		}
+    @Override
+    public void startLinkOrAuth(Context context) {
+        Activity activity = null;
 
-		// Select account to link
-		if (linked == false) {
-			linkInProgress = true;
-			try {
-				activity.startActivityForResult(
-						credential.newChooseAccountIntent(),
-						REQUEST_ACCOUNT_PICKER);
-			} catch (ActivityNotFoundException e) {
-				// User doesn't have Google Play Services Framework installed
-				showLoginToast(activity, LoginResult.NO_PLAY_SERVICES);
-				Logger.logException(TAG, e);
-			}
-		} else {
-			createDriveService(accountName);
-			startAuthThread(activity);
-		}
-	}
+        // We might be called from a non-Activity context, so safely dereference
+        if (context instanceof Activity) {
+            activity = (Activity) context;
+        }
 
-	@Override
-	public boolean isLinkOrAuthInProgress() {
-		return linkInProgress || authInProgress;
-	}
+        // Select account to link
+        if (linked == false) {
+            linkInProgress = true;
+            try {
+                activity.startActivityForResult(
+                        credential.newChooseAccountIntent(),
+                        REQUEST_ACCOUNT_PICKER);
+            } catch (ActivityNotFoundException e) {
+                // User doesn't have Google Play Services Framework installed
+                showLoginToast(activity, LoginResult.NO_PLAY_SERVICES);
+                Logger.logException(TAG, e);
+            }
+        } else {
+            createDriveService(accountName);
+            startAuthThread(activity);
+        }
+    }
 
-	@Override
-	public boolean resumeLinkOrAuth() {
-		return true;
-	}
+    @Override
+    public boolean isLinkOrAuthInProgress() {
+        return linkInProgress || authInProgress;
+    }
 
-	@Override
-	public void unLink() {
-		// Clear preferences
-		Editor edit = mPrefs.edit();
-		edit.clear();
-		edit.commit();
+    @Override
+    public boolean resumeLinkOrAuth() {
+        return true;
+    }
 
-		// Clear data
-		linkInProgress = false;
-		authInProgress = false;
-		authenticated = false;
-		linked = false;
-		accountName = null;
-		driveService = null;
+    @Override
+    public void unLink() {
+        // Clear preferences
+        Editor edit = mPrefs.edit();
+        edit.clear();
+        edit.commit();
 
-		Log.d(TAG, "Google Drive account unlinked");
-	}
+        // Clear data
+        linkInProgress = false;
+        authInProgress = false;
+        authenticated = false;
+        linked = false;
+        accountName = null;
+        driveService = null;
 
-	@Override
-	public String getUserName() {
-		return accountName;
-	}
+        Log.d(TAG, "Google Drive account unlinked");
+    }
 
-	@Override
-	public EncFSFileProvider getFileProvider(String path) {
-		return new GoogleDriveFileProvider(driveService, path);
-	}
+    @Override
+    public String getUserName() {
+        return accountName;
+    }
 
-	@Override
-	public boolean forwardActivityResult(Activity origin, int requestCode,
-			int resultCode, Intent data) {
-		switch (requestCode) {
-		case REQUEST_ACCOUNT_PICKER:
-			if (resultCode == Activity.RESULT_OK && data != null
-					&& data.getExtras() != null) {
-				accountName = data
-						.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-				if (accountName != null) {
-					linked = true;
+    @Override
+    public EncFSFileProvider getFileProvider(String path) {
+        return new GoogleDriveFileProvider(driveService, path);
+    }
 
-					// write account name / linked to database
-					Editor edit = mPrefs.edit();
-					edit.putBoolean(PREF_LINKED, true);
-					edit.putString(PREF_ACCOUNT_NAME, accountName);
-					edit.commit();
+    @Override
+    public boolean forwardActivityResult(Activity origin, int requestCode,
+                                         int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_ACCOUNT_PICKER:
+                if (resultCode == Activity.RESULT_OK && data != null
+                        && data.getExtras() != null) {
+                    accountName = data
+                            .getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null) {
+                        linked = true;
 
-					createDriveService(accountName);
+                        // write account name / linked to database
+                        Editor edit = mPrefs.edit();
+                        edit.putBoolean(PREF_LINKED, true);
+                        edit.putString(PREF_ACCOUNT_NAME, accountName);
+                        edit.commit();
 
-					startAuthThread(origin);
-					
-					// Clear linkInProgress AFTER startAuthThread() sets authInProgress
-					linkInProgress = false;
+                        createDriveService(accountName);
 
-					return true;
-				}
-			}
-			break;
-		case REQUEST_AUTH_TOKEN:
-			if (resultCode == Activity.RESULT_OK) {
-				Log.v(TAG, "Successfully authenticated to Google API");
-				showLoginToast(origin, LoginResult.OK);
-				authenticated = true;
-				return true;
-			}
-			break;
-		}
+                        startAuthThread(origin);
 
-		return false;
-	}
+                        // Clear linkInProgress AFTER startAuthThread() sets authInProgress
+                        linkInProgress = false;
+
+                        return true;
+                    }
+                }
+                break;
+            case REQUEST_AUTH_TOKEN:
+                if (resultCode == Activity.RESULT_OK) {
+                    Log.v(TAG, "Successfully authenticated to Google API");
+                    showLoginToast(origin, LoginResult.OK);
+                    authenticated = true;
+                    return true;
+                }
+                break;
+        }
+
+        return false;
+    }
 }

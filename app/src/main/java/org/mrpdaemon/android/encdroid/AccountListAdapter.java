@@ -18,96 +18,96 @@
 
 package org.mrpdaemon.android.encdroid;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class AccountListAdapter extends ArrayAdapter<Account> {
 
-	Context context;
-	private int resourceId;
-	List<Account> items;
+    Context context;
+    private int resourceId;
+    List<Account> items;
 
-	public AccountListAdapter(Context context, int resourceId, List<Account> items) {
-		super(context, resourceId, items);
-		this.context = context;
-		this.resourceId = resourceId;
-		this.items = items;
-	}
+    public AccountListAdapter(Context context, int resourceId, List<Account> items) {
+        super(context, resourceId, items);
+        this.context = context;
+        this.resourceId = resourceId;
+        this.items = items;
+    }
 
-	public Account getItem(int i) {
-		return items.get(i);
-	}
+    public Account getItem(int i) {
+        return items.get(i);
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
-		if (row == null) {
-			LayoutInflater inflater = (LayoutInflater) context
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			row = inflater.inflate(resourceId, null);
-		}
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View row = convertView;
+        if (row == null) {
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            row = inflater.inflate(resourceId, null);
+        }
 
-		final Account item = items.get(position);
+        final Account item = items.get(position);
 
-		if (item != null) {
-			// Title text
-			TextView titleText = (TextView) row.findViewById(R.id.account_title_text);
-			titleText.setText(item.getName());
-			
-			// Icon image
-			ImageView accountIcon = (ImageView) row.findViewById(R.id.account_image_view);
-			accountIcon.setImageResource(item.getIconResId());
-			
-			// Status text
-			TextView statusText = (TextView) row.findViewById(R.id.account_status_text);
-			String status;
+        if (item != null) {
+            // Title text
+            TextView titleText = (TextView) row.findViewById(R.id.account_title_text);
+            titleText.setText(item.getName());
 
-			if (item.isAuthenticated()) {
-				status = String.format(context.getString(R.string.account_logged_in),
-						item.getUserName());
-			} else if (item.isLinked()) {
-				status = String.format(context.getString(R.string.account_linked),
-						item.getUserName());
-			} else {
-				status = context.getString(R.string.account_not_linked);
-			}
+            // Icon image
+            ImageView accountIcon = (ImageView) row.findViewById(R.id.account_image_view);
+            accountIcon.setImageResource(item.getIconResId());
 
-			statusText.setText(status);
+            // Status text
+            TextView statusText = (TextView) row.findViewById(R.id.account_status_text);
+            String status;
 
-			// Button
-			Button accountButton = (Button) row.findViewById(R.id.account_button);
+            if (item.isAuthenticated()) {
+                status = String.format(context.getString(R.string.account_logged_in),
+                        item.getUserName());
+            } else if (item.isLinked()) {
+                status = String.format(context.getString(R.string.account_linked),
+                        item.getUserName());
+            } else {
+                status = context.getString(R.string.account_not_linked);
+            }
 
-			if (item.isLinked()) {
-				accountButton.setText(context.getString(R.string.account_unlink_btn_str));
-				accountButton.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						// Unlink the account
-						item.unLink();
-						notifyDataSetChanged();
-					}
-				});
-			} else {
-				accountButton.setText(context.getString(R.string.account_link_btn_str));
-				accountButton.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						// Start linking an account
-						item.startLinkOrAuth(context);
-					}
-				});
-			}
-		}
+            statusText.setText(status);
 
-		return row;
-	}
+            // Button
+            Button accountButton = (Button) row.findViewById(R.id.account_button);
+
+            if (item.isLinked()) {
+                accountButton.setText(context.getString(R.string.account_unlink_btn_str));
+                accountButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Unlink the account
+                        item.unLink();
+                        notifyDataSetChanged();
+                    }
+                });
+            } else {
+                accountButton.setText(context.getString(R.string.account_link_btn_str));
+                accountButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Start linking an account
+                        item.startLinkOrAuth(context);
+                    }
+                });
+            }
+        }
+
+        return row;
+    }
 }

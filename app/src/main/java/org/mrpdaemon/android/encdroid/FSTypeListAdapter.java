@@ -18,8 +18,6 @@
 
 package org.mrpdaemon.android.encdroid;
 
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -29,61 +27,63 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class FSTypeListAdapter extends ArrayAdapter<FileSystem> {
 
-	Context context;
-	private int resourceId;
-	List<FileSystem> items;
+    Context context;
+    private int resourceId;
+    List<FileSystem> items;
 
-	public FSTypeListAdapter(Context context, int resourceId,
-			List<FileSystem> items) {
-		super(context, resourceId, items);
-		this.context = context;
-		this.resourceId = resourceId;
-		this.items = items;
-	}
+    public FSTypeListAdapter(Context context, int resourceId,
+                             List<FileSystem> items) {
+        super(context, resourceId, items);
+        this.context = context;
+        this.resourceId = resourceId;
+        this.items = items;
+    }
 
-	public FileSystem getItem(int i) {
-		return items.get(i);
-	}
+    public FileSystem getItem(int i) {
+        return items.get(i);
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
-		if (row == null) {
-			LayoutInflater inflater = (LayoutInflater) context
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			row = inflater.inflate(resourceId, null);
-		}
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View row = convertView;
+        if (row == null) {
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            row = inflater.inflate(resourceId, null);
+        }
 
-		final FileSystem item = items.get(position);
+        final FileSystem item = items.get(position);
 
-		if (item != null) {
-			TextView fsName = (TextView) row.findViewById(R.id.fs_list_name);
-			ImageView fsIcon = (ImageView) row.findViewById(R.id.fs_list_icon);
+        if (item != null) {
+            TextView fsName = (TextView) row.findViewById(R.id.fs_list_name);
+            ImageView fsIcon = (ImageView) row.findViewById(R.id.fs_list_icon);
 
-			if (fsName != null) {
-				fsName.setText(item.getName());
-				if (!isEnabled(position)) {
-					fsName.setTextColor(Color.LTGRAY);
-				} else {
-					fsName.setTextColor(Color.BLACK);
-				}
-			}
+            if (fsName != null) {
+                fsName.setText(item.getName());
+                if (!isEnabled(position)) {
+                    fsName.setTextColor(Color.LTGRAY);
+                } else {
+                    fsName.setTextColor(Color.BLACK);
+                }
+            }
 
-			if (fsIcon != null) {
-				fsIcon.setImageResource(item.getIconResId());
-			}
-		}
+            if (fsIcon != null) {
+                fsIcon.setImageResource(item.getIconResId());
+            }
+        }
 
-		return row;
-	}
+        return row;
+    }
 
-	@Override
-	public boolean isEnabled(int position) {
-		final FileSystem item = items.get(position);
+    @Override
+    public boolean isEnabled(int position) {
+        final FileSystem item = items.get(position);
 
-		return item.isEnabled();
-	}
+        return item.isEnabled();
+    }
 
 }

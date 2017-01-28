@@ -18,9 +18,6 @@
 
 package org.mrpdaemon.android.encdroid;
 
-import java.io.File;
-import java.util.Locale;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,58 +26,61 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.util.Locale;
+
 public class ConfigFileChooserAdapter extends ArrayAdapter<File> {
 
-	private Context context;
-	private int resourceId;
-	private File[] items;
-	private String[] itemNames;
+    private Context context;
+    private int resourceId;
+    private File[] items;
+    private String[] itemNames;
 
-	public ConfigFileChooserAdapter(Context context, int resourceId,
-			File[] items,String[] itemNames) {
-		super(context, resourceId, items);
-		this.context = context;
-		this.resourceId = resourceId;
-		this.items = items;
-		this.itemNames = itemNames;
-	}
+    public ConfigFileChooserAdapter(Context context, int resourceId,
+                                    File[] items, String[] itemNames) {
+        super(context, resourceId, items);
+        this.context = context;
+        this.resourceId = resourceId;
+        this.items = items;
+        this.itemNames = itemNames;
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
-		if (row == null) {
-			LayoutInflater inflater = (LayoutInflater) context
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			row = inflater.inflate(resourceId, null);
-		}
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View row = convertView;
+        if (row == null) {
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            row = inflater.inflate(resourceId, null);
+        }
 
-		final File item = items[position];
+        final File item = items[position];
 
-		if (item != null) {
-			TextView fileName = (TextView) row.findViewById(R.id.file_chooser_item_name);
-			ImageView fileIcon = (ImageView) row
-					.findViewById(R.id.file_chooser_item_icon);
+        if (item != null) {
+            TextView fileName = (TextView) row.findViewById(R.id.file_chooser_item_name);
+            ImageView fileIcon = (ImageView) row
+                    .findViewById(R.id.file_chooser_item_icon);
 
-			if (fileName != null) {
-					fileName.setText(itemNames[position]);
-			}
+            if (fileName != null) {
+                fileName.setText(itemNames[position]);
+            }
 
-			if (fileIcon != null) {
-				if (item.isDirectory()) {
-					fileIcon.setImageResource(R.drawable.ic_folder);
-				} else {
-					String mimeType = FileUtils.getMimeTypeFromFileName(item
-							.getName().toLowerCase(Locale.getDefault()));
-					if (mimeType != null) {
-						fileIcon.setImageResource(FileUtils
-								.getIconResourceForMimeType(mimeType));
-					} else {
-						fileIcon.setImageResource(FileUtils
-								.getIconResourceForFileExtension(item.getName()));
-					}
-				}
-			}
-		}
-		return row;
-	}
+            if (fileIcon != null) {
+                if (item.isDirectory()) {
+                    fileIcon.setImageResource(R.drawable.ic_folder);
+                } else {
+                    String mimeType = FileUtils.getMimeTypeFromFileName(item
+                            .getName().toLowerCase(Locale.getDefault()));
+                    if (mimeType != null) {
+                        fileIcon.setImageResource(FileUtils
+                                .getIconResourceForMimeType(mimeType));
+                    } else {
+                        fileIcon.setImageResource(FileUtils
+                                .getIconResourceForFileExtension(item.getName()));
+                    }
+                }
+            }
+        }
+        return row;
+    }
 }

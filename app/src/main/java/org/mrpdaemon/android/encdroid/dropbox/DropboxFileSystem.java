@@ -19,6 +19,7 @@
 package org.mrpdaemon.android.encdroid.dropbox;
 
 import android.content.Context;
+
 import org.mrpdaemon.android.encdroid.Account;
 import org.mrpdaemon.android.encdroid.FileSystem;
 import org.mrpdaemon.android.encdroid.R;
@@ -26,22 +27,22 @@ import org.mrpdaemon.android.encdroid.R;
 // Class representing the Dropbox file system
 public class DropboxFileSystem extends FileSystem {
 
-	public DropboxFileSystem(Account account, Context context) {
-		super(account, context);
-	}
+    public DropboxFileSystem(Account account, Context context) {
+        super(account, context);
+    }
 
-	@Override
-	public String getName() {
-		return "Dropbox";
-	}
+    @Override
+    public String getName() {
+        return "Dropbox";
+    }
 
-	@Override
-	public int getIconResId() {
-		return R.drawable.ic_dropbox;
-	}
-	
-	@Override
-	public String getPathPrefix() {
-		return "[Dropbox]:";
-	}
+    @Override
+    public int getIconResId() {
+        return R.drawable.ic_dropbox;
+    }
+
+    @Override
+    public String getPathPrefix() {
+        return "[Dropbox]:";
+    }
 }

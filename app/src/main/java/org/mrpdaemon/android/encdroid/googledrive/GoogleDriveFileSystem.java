@@ -19,29 +19,30 @@
 package org.mrpdaemon.android.encdroid.googledrive;
 
 import android.content.Context;
+
 import org.mrpdaemon.android.encdroid.Account;
 import org.mrpdaemon.android.encdroid.FileSystem;
 import org.mrpdaemon.android.encdroid.R;
 
 public class GoogleDriveFileSystem extends FileSystem {
 
-	public GoogleDriveFileSystem(Account account, Context context) {
-		super(account, context);
-	}
+    public GoogleDriveFileSystem(Account account, Context context) {
+        super(account, context);
+    }
 
-	@Override
-	public String getName() {
-		return "Google Drive";
-	}
+    @Override
+    public String getName() {
+        return "Google Drive";
+    }
 
-	@Override
-	public int getIconResId() {
-		return R.drawable.ic_google_drive;
-	}
+    @Override
+    public int getIconResId() {
+        return R.drawable.ic_google_drive;
+    }
 
-	@Override
-	public String getPathPrefix() {
-		return "[Drive]:";
-	}
+    @Override
+    public String getPathPrefix() {
+        return "[Drive]:";
+    }
 
 }

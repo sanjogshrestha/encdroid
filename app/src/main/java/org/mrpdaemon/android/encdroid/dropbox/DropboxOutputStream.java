@@ -18,145 +18,146 @@
 
 package org.mrpdaemon.android.encdroid.dropbox;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-
 import android.util.Log;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.exception.DropboxException;
+
 import org.mrpdaemon.android.encdroid.Logger;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
 public class DropboxOutputStream extends OutputStream {
 
-	private static final String TAG = "DropboxOutputStream";
+    private static final String TAG = "DropboxOutputStream";
 
-	// Pipe's input end to hand off to DropboxAPI.putFile()
-	private PipedInputStream pipeDropbox;
+    // Pipe's input end to hand off to DropboxAPI.putFile()
+    private PipedInputStream pipeDropbox;
 
-	// Pipe's output end that this class writes to
-	private PipedOutputStream pipeToWrite;
+    // Pipe's output end that this class writes to
+    private PipedOutputStream pipeToWrite;
 
-	// Whether the upload failed
-	private volatile boolean failed;
+    // Whether the upload failed
+    private volatile boolean failed;
 
-	// Failure message
-	private volatile String failMessage;
+    // Failure message
+    private volatile String failMessage;
 
-	// Thread for stopping
-	private Thread thread;
+    // Thread for stopping
+    private Thread thread;
 
-	// Length
-	private final long fileLength;
+    // Length
+    private final long fileLength;
 
-	public DropboxOutputStream(final DropboxAPI<AndroidAuthSession> api,
-			final String dstPath, long length) throws IOException {
-		this.failed = false;
-		this.fileLength = length;
+    public DropboxOutputStream(final DropboxAPI<AndroidAuthSession> api,
+                               final String dstPath, long length) throws IOException {
+        this.failed = false;
+        this.fileLength = length;
 
-		Log.d(TAG, "Creating output stream for path " + dstPath);
+        Log.d(TAG, "Creating output stream for path " + dstPath);
 
-		// Create pipes
-		pipeDropbox = new PipedInputStream();
-		pipeToWrite = new PipedOutputStream(pipeDropbox);
+        // Create pipes
+        pipeDropbox = new PipedInputStream();
+        pipeToWrite = new PipedOutputStream(pipeDropbox);
 
-		thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					api.putFileOverwrite(dstPath, pipeDropbox, fileLength, null);
-				} catch (DropboxException e) {
-					Logger.logException(TAG, e);
-					// Propagate the error
-					if (e.getMessage() != null) {
-						DropboxOutputStream.this.fail(e.getMessage());
-					} else {
-						DropboxOutputStream.this.fail(e.toString());
-					}
-				}
-			}
-		});
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    api.putFileOverwrite(dstPath, pipeDropbox, fileLength, null);
+                } catch (DropboxException e) {
+                    Logger.logException(TAG, e);
+                    // Propagate the error
+                    if (e.getMessage() != null) {
+                        DropboxOutputStream.this.fail(e.getMessage());
+                    } else {
+                        DropboxOutputStream.this.fail(e.toString());
+                    }
+                }
+            }
+        });
 
-		thread.start();
-	}
+        thread.start();
+    }
 
-	private void fail(String message) {
-		failed = true;
-		failMessage = message;
-	}
+    private void fail(String message) {
+        failed = true;
+        failMessage = message;
+    }
 
-	private boolean getFailed() {
-		return failed;
-	}
+    private boolean getFailed() {
+        return failed;
+    }
 
-	private String getFailMessage() {
-		return failMessage;
-	}
+    private String getFailMessage() {
+        return failMessage;
+    }
 
-	@Override
-	public void close() throws IOException {
-		Log.v(TAG, "close() called");
+    @Override
+    public void close() throws IOException {
+        Log.v(TAG, "close() called");
 
-		if (getFailed()) {
-			throw new IOException(getFailMessage());
-		}
+        if (getFailed()) {
+            throw new IOException(getFailMessage());
+        }
 
-		pipeToWrite.flush();
+        pipeToWrite.flush();
 
-		try {
-			thread.join();
-		} catch (InterruptedException e) {
-			throw new IOException(e.getMessage());
-		}
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            throw new IOException(e.getMessage());
+        }
 
-		pipeToWrite.close();
-		pipeDropbox.close();
-	}
+        pipeToWrite.close();
+        pipeDropbox.close();
+    }
 
-	@Override
-	public void flush() throws IOException {
-		Log.v(TAG, "flush() called");
+    @Override
+    public void flush() throws IOException {
+        Log.v(TAG, "flush() called");
 
-		if (getFailed()) {
-			throw new IOException(getFailMessage());
-		}
-		pipeToWrite.flush();
-	}
+        if (getFailed()) {
+            throw new IOException(getFailMessage());
+        }
+        pipeToWrite.flush();
+    }
 
-	@Override
-	public void write(byte[] buffer, int offset, int count) throws IOException {
-		Log.v(TAG, "write() " + buffer.length + " bytes offset: " + offset
-				+ " count: " + count);
+    @Override
+    public void write(byte[] buffer, int offset, int count) throws IOException {
+        Log.v(TAG, "write() " + buffer.length + " bytes offset: " + offset
+                + " count: " + count);
 
-		if (getFailed()) {
-			throw new IOException(getFailMessage());
-		}
+        if (getFailed()) {
+            throw new IOException(getFailMessage());
+        }
 
-		pipeToWrite.write(buffer, offset, count);
-	}
+        pipeToWrite.write(buffer, offset, count);
+    }
 
-	@Override
-	public void write(byte[] buffer) throws IOException {
-		Log.v(TAG, "write() " + buffer.length + " bytes");
+    @Override
+    public void write(byte[] buffer) throws IOException {
+        Log.v(TAG, "write() " + buffer.length + " bytes");
 
-		if (getFailed()) {
-			throw new IOException(getFailMessage());
-		}
+        if (getFailed()) {
+            throw new IOException(getFailMessage());
+        }
 
-		pipeToWrite.write(buffer);
-	}
+        pipeToWrite.write(buffer);
+    }
 
-	@Override
-	public void write(int oneByte) throws IOException {
-		Log.v(TAG, "write() " + oneByte);
+    @Override
+    public void write(int oneByte) throws IOException {
+        Log.v(TAG, "write() " + oneByte);
 
-		if (getFailed()) {
-			throw new IOException(getFailMessage());
-		}
+        if (getFailed()) {
+            throw new IOException(getFailMessage());
+        }
 
-		pipeToWrite.write(oneByte);
-	}
+        pipeToWrite.write(oneByte);
+    }
 }

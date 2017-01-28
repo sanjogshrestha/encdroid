@@ -18,10 +18,6 @@
 
 package org.mrpdaemon.android.encdroid;
 
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -30,205 +26,209 @@ import android.provider.BaseColumns;
 import android.util.Base64;
 import android.util.Log;
 
+import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class DBHelper extends SQLiteOpenHelper {
 
-	// Logger tag
-	private final String TAG = "DBHelper";
+    // Logger tag
+    private final String TAG = "DBHelper";
 
-	// Database name
-	public static final String DB_NAME = "volume.db";
+    // Database name
+    public static final String DB_NAME = "volume.db";
 
-	// Database version
-	public static final int DB_VERSION = 4;
+    // Database version
+    public static final int DB_VERSION = 4;
 
-	// Volume table name
-	public static final String DB_TABLE = "volumes";
+    // Volume table name
+    public static final String DB_TABLE = "volumes";
 
-	// Column names
-	public static final String DB_COL_ID = BaseColumns._ID;
-	public static final String DB_COL_NAME = "name";
-	public static final String DB_COL_PATH = "path";
-	public static final String DB_COL_CONFIGPATH = "configPath";
-	public static final String DB_COL_TYPE = "type";
-	public static final String DB_COL_KEY = "key";
+    // Column names
+    public static final String DB_COL_ID = BaseColumns._ID;
+    public static final String DB_COL_NAME = "name";
+    public static final String DB_COL_PATH = "path";
+    public static final String DB_COL_CONFIGPATH = "configPath";
+    public static final String DB_COL_TYPE = "type";
+    public static final String DB_COL_KEY = "key";
 
-	private static final String[] NO_ARGS = {};
+    private static final String[] NO_ARGS = {};
 
-	// Application object
-	private EDApplication mApp;
+    // Application object
+    private EDApplication mApp;
 
-	public DBHelper(EDApplication application) {
-		super(application, DB_NAME, null, DB_VERSION);
+    public DBHelper(EDApplication application) {
+        super(application, DB_NAME, null, DB_VERSION);
 
-		this.mApp = application;
-	}
+        mApp = application;
+    }
 
-	@Override
-	public void onCreate(SQLiteDatabase db) {
-		String sqlCmd = "CREATE TABLE " + DB_TABLE + " (" + DB_COL_ID
-				+ " int primary key, " + DB_COL_NAME + " text, " + DB_COL_PATH
-				+ " text, " + DB_COL_KEY + " text, " + DB_COL_TYPE + " int, "
-				+ DB_COL_CONFIGPATH + " text)";
-		Log.d(TAG, "onCreate() executing SQL: " + sqlCmd);
-		db.execSQL(sqlCmd);
-	}
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String sqlCmd = "CREATE TABLE " + DB_TABLE + " (" + DB_COL_ID
+                + " int primary key, " + DB_COL_NAME + " text, " + DB_COL_PATH
+                + " text, " + DB_COL_KEY + " text, " + DB_COL_TYPE + " int, "
+                + DB_COL_CONFIGPATH + " text)";
+        Log.d(TAG, "onCreate() executing SQL: " + sqlCmd);
+        db.execSQL(sqlCmd);
+    }
 
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// Adding column DB_COL_CONFIGPATH on upgrade
-		if (oldVersion == 3) {
-			Log.d(TAG, "onUpgrade() Upgrading DB");
-			db.execSQL("ALTER TABLE " + DB_TABLE + " ADD COLUMN "
-					+ DB_COL_CONFIGPATH + " TEXT");
-		} else {
-			db.execSQL("DROP TABLE IF EXISTS " + DB_TABLE);
-			Log.d(TAG, "onUpgrade() recreating DB");
-			onCreate(db);
-		}
-	}
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Adding column DB_COL_CONFIGPATH on upgrade
+        if (oldVersion == 3) {
+            Log.d(TAG, "onUpgrade() Upgrading DB");
+            db.execSQL("ALTER TABLE " + DB_TABLE + " ADD COLUMN "
+                    + DB_COL_CONFIGPATH + " TEXT");
+        } else {
+            db.execSQL("DROP TABLE IF EXISTS " + DB_TABLE);
+            Log.d(TAG, "onUpgrade() recreating DB");
+            onCreate(db);
+        }
+    }
 
-	public void insertVolume(Volume volume) {
-		SQLiteDatabase db = getWritableDatabase();
-		ContentValues values = new ContentValues();
+    public void insertVolume(Volume volume) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
 
-		values.clear();
-		values.put(DB_COL_NAME, volume.getName());
-		values.put(DB_COL_PATH, volume.getPath());
-		values.put(DB_COL_CONFIGPATH, volume.getCustomConfigPath());
+        values.clear();
+        values.put(DB_COL_NAME, volume.getName());
+        values.put(DB_COL_PATH, volume.getPath());
+        values.put(DB_COL_CONFIGPATH, volume.getCustomConfigPath());
 
-		int fsIndex = mApp.getFSIndex(volume.getFileSystem());
-		if (fsIndex < 0) {
-			throw new InvalidParameterException("Invalid filesystem index: "
-					+ fsIndex);
-		}
-		values.put(DB_COL_TYPE, fsIndex);
+        int fsIndex = mApp.getFSIndex(volume.getFileSystem());
+        if (fsIndex < 0) {
+            throw new InvalidParameterException("Invalid filesystem index: "
+                    + fsIndex);
+        }
+        values.put(DB_COL_TYPE, fsIndex);
 
-		Log.d(TAG, "insertVolume() name: '" + volume.getName() + "' path: '"
-				+ volume.getPath() + "'");
+        Log.d(TAG, "insertVolume() name: '" + volume.getName() + "' path: '"
+                + volume.getPath() + "'");
 
-		// TODO: Make sure path is unique
-		db.insertOrThrow(DB_TABLE, null, values);
-	}
+        // TODO: Make sure path is unique
+        db.insertOrThrow(DB_TABLE, null, values);
+    }
 
-	public void deleteVolume(Volume volume) {
-		SQLiteDatabase db = getWritableDatabase();
+    public void deleteVolume(Volume volume) {
+        SQLiteDatabase db = getWritableDatabase();
 
-		Log.d(TAG, "deleteVolume() " + volume.getName());
+        Log.d(TAG, "deleteVolume() " + volume.getName());
 
-		db.delete(DB_TABLE, DB_COL_NAME + "=? AND " + DB_COL_PATH + "=?",
-				new String[] { volume.getName(), volume.getPath() });
-	}
+        db.delete(DB_TABLE, DB_COL_NAME + "=? AND " + DB_COL_PATH + "=?",
+                new String[]{volume.getName(), volume.getPath()});
+    }
 
-	public void renameVolume(Volume volume, String newName) {
-		SQLiteDatabase db = getWritableDatabase();
+    public void renameVolume(Volume volume, String newName) {
+        SQLiteDatabase db = getWritableDatabase();
 
-		Log.d(TAG, "renameVolume() " + volume.getName() + " to " + newName);
+        Log.d(TAG, "renameVolume() " + volume.getName() + " to " + newName);
 
-		ContentValues values = new ContentValues();
-		values.put(DB_COL_NAME, newName);
-		db.update(DB_TABLE, values, DB_COL_NAME + "=? AND " + DB_COL_PATH
-				+ "=?", new String[] { volume.getName(), volume.getPath() });
-	}
+        ContentValues values = new ContentValues();
+        values.put(DB_COL_NAME, newName);
+        db.update(DB_TABLE, values, DB_COL_NAME + "=? AND " + DB_COL_PATH
+                + "=?", new String[]{volume.getName(), volume.getPath()});
+    }
 
-	public void cacheKey(Volume volume, byte[] key) {
-		SQLiteDatabase db = getWritableDatabase();
+    public void cacheKey(Volume volume, byte[] key) {
+        SQLiteDatabase db = getWritableDatabase();
 
-		Log.d(TAG, "cacheKey() for volume" + volume.getName());
+        Log.d(TAG, "cacheKey() for volume" + volume.getName());
 
-		ContentValues values = new ContentValues();
-		values.put(DB_COL_KEY, Base64.encodeToString(key, Base64.DEFAULT));
-		db.update(DB_TABLE, values, DB_COL_NAME + "=? AND " + DB_COL_PATH
-				+ "=?", new String[] { volume.getName(), volume.getPath() });
-	}
+        ContentValues values = new ContentValues();
+        values.put(DB_COL_KEY, Base64.encodeToString(key, Base64.DEFAULT));
+        db.update(DB_TABLE, values, DB_COL_NAME + "=? AND " + DB_COL_PATH
+                + "=?", new String[]{volume.getName(), volume.getPath()});
+    }
 
-	public void clearKey(Volume volume) {
-		SQLiteDatabase db = getWritableDatabase();
+    public void clearKey(Volume volume) {
+        SQLiteDatabase db = getWritableDatabase();
 
-		Log.d(TAG, "clearKey() for volume" + volume.getName());
+        Log.d(TAG, "clearKey() for volume" + volume.getName());
 
-		ContentValues values = new ContentValues();
-		values.putNull(DB_COL_KEY);
-		db.update(DB_TABLE, values, DB_COL_NAME + "=? AND " + DB_COL_PATH
-				+ "=?", new String[] { volume.getName(), volume.getPath() });
-	}
+        ContentValues values = new ContentValues();
+        values.putNull(DB_COL_KEY);
+        db.update(DB_TABLE, values, DB_COL_NAME + "=? AND " + DB_COL_PATH
+                + "=?", new String[]{volume.getName(), volume.getPath()});
+    }
 
-	public void clearAllKeys() {
-		SQLiteDatabase db = getWritableDatabase();
+    public void clearAllKeys() {
+        SQLiteDatabase db = getWritableDatabase();
 
-		Log.d(TAG, "clearAllKeys()");
+        Log.d(TAG, "clearAllKeys()");
 
-		db.execSQL("UPDATE " + DB_TABLE + " SET " + DB_COL_KEY + " = NULL");
-	}
+        db.execSQL("UPDATE " + DB_TABLE + " SET " + DB_COL_KEY + " = NULL");
+    }
 
-	public byte[] getCachedKey(Volume volume) {
-		SQLiteDatabase db = getReadableDatabase();
+    public byte[] getCachedKey(Volume volume) {
+        SQLiteDatabase db = getReadableDatabase();
 
-		Cursor cursor = db.query(DB_TABLE, NO_ARGS, DB_COL_NAME + "=? AND "
-				+ DB_COL_PATH + "=?",
-				new String[] { volume.getName(), volume.getPath() }, null,
-				null, null);
+        Cursor cursor = db.query(DB_TABLE, NO_ARGS, DB_COL_NAME + "=? AND "
+                        + DB_COL_PATH + "=?",
+                new String[]{volume.getName(), volume.getPath()}, null,
+                null, null);
 
-		if (cursor.moveToFirst()) {
-			String keyStr = cursor.getString(cursor.getColumnIndex(DB_COL_KEY));
-			if (keyStr != null) {
-				return Base64.decode(keyStr, Base64.DEFAULT);
-			}
-		}
+        if (cursor.moveToFirst()) {
+            String keyStr = cursor.getString(cursor.getColumnIndex(DB_COL_KEY));
+            if (keyStr != null) {
+                return Base64.decode(keyStr, Base64.DEFAULT);
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public List<Volume> getVolumes() {
-		ArrayList<Volume> volumes = new ArrayList<Volume>();
-		SQLiteDatabase db = getReadableDatabase();
+    public List<Volume> getVolumes() {
+        ArrayList<Volume> volumes = new ArrayList<Volume>();
+        SQLiteDatabase db = getReadableDatabase();
 
-		// SELECT *, loop over each, create Volume
-		Cursor cursor = db.rawQuery("SELECT * FROM " + DB_TABLE, NO_ARGS);
+        // SELECT *, loop over each, create Volume
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DB_TABLE, NO_ARGS);
 
-		int nameColId = cursor.getColumnIndex(DB_COL_NAME);
-		int pathColId = cursor.getColumnIndex(DB_COL_PATH);
-		int typeColId = cursor.getColumnIndex(DB_COL_TYPE);
-		int pathConfigColId = cursor.getColumnIndex(DB_COL_CONFIGPATH);
+        int nameColId = cursor.getColumnIndex(DB_COL_NAME);
+        int pathColId = cursor.getColumnIndex(DB_COL_PATH);
+        int typeColId = cursor.getColumnIndex(DB_COL_TYPE);
+        int pathConfigColId = cursor.getColumnIndex(DB_COL_CONFIGPATH);
 
-		if (cursor.moveToFirst()) {
-			do {
-				String volName = cursor.getString(nameColId);
-				String volPath = cursor.getString(pathColId);
-				String volConfigPath = cursor.getString(pathConfigColId);
-				int volFsIdx = cursor.getInt(typeColId);
+        if (cursor.moveToFirst()) {
+            do {
+                String volName = cursor.getString(nameColId);
+                String volPath = cursor.getString(pathColId);
+                String volConfigPath = cursor.getString(pathConfigColId);
+                int volFsIdx = cursor.getInt(typeColId);
 
-				Log.d(TAG, "getVolume() name: '" + volName + "' path: '"
-						+ volPath + "'");
+                Log.d(TAG, "getVolume() name: '" + volName + "' path: '"
+                        + volPath + "'");
 
-				if (volFsIdx >= 0) {
-					Volume volume;
-					if (volConfigPath == null) {
-						volume = new Volume(volName, volPath, mApp
-								.getFileSystemList().get(volFsIdx));
-					} else {
-						volume = new Volume(volName, volPath, volConfigPath,
-								mApp.getFileSystemList().get(volFsIdx));
-					}
+                if (volFsIdx >= 0) {
+                    Volume volume;
+                    if (volConfigPath == null) {
+                        volume = new Volume(volName, volPath, mApp
+                                .getFileSystemList().get(volFsIdx));
+                    } else {
+                        volume = new Volume(volName, volPath, volConfigPath,
+                                mApp.getFileSystemList().get(volFsIdx));
+                    }
 
-					volumes.add(volume);
-				} else {
-					/*
+                    volumes.add(volume);
+                } else {
+                    /*
 					 * Volume affected by a bug which ended up inserting volumes
 					 * with type == -1 into the DB. Let's drop this volume from
 					 * the DB.
 					 */
-					int keyColId = cursor.getColumnIndex(DB_COL_ID);
-					int rowKey = cursor.getInt(keyColId);
+                    int keyColId = cursor.getColumnIndex(DB_COL_ID);
+                    int rowKey = cursor.getInt(keyColId);
 
-					Log.i(TAG, "Invalid volume type: " + volFsIdx
-							+ " deleting volume '" + volName
-							+ "' from database");
+                    Log.i(TAG, "Invalid volume type: " + volFsIdx
+                            + " deleting volume '" + volName
+                            + "' from database");
 
-					db.delete(DB_TABLE, DB_COL_ID + "=" + rowKey, null);
-				}
-			} while (cursor.moveToNext());
-		}
+                    db.delete(DB_TABLE, DB_COL_ID + "=" + rowKey, null);
+                }
+            } while (cursor.moveToNext());
+        }
 
-		return volumes;
-	}
+        return volumes;
+    }
 }

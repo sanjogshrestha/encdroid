@@ -6,9 +6,9 @@ package org.mrpdaemon.android.encdroid;
  */
 public interface TaskResultListener {
 
-	// Result being returned from a completed task
-	public void onTaskResult(int taskId, Object result);
+    // Result being returned from a completed task
+    public void onTaskResult(int taskId, Object result);
 
-	// Error being returned from the task
-	public void onTaskError(int taskId, String errorText);
+    // Error being returned from the task
+    public void onTaskError(int taskId, String errorText);
 }
