@@ -23,6 +23,10 @@ import java.util.List;
 
 import android.app.Application;
 import android.util.Log;
+import org.mrpdaemon.android.encdroid.dropbox.DropboxAccount;
+import org.mrpdaemon.android.encdroid.dropbox.DropboxFileSystem;
+import org.mrpdaemon.android.encdroid.googledrive.GoogleDriveAccount;
+import org.mrpdaemon.android.encdroid.googledrive.GoogleDriveFileSystem;
 
 public class EDApplication extends Application {
 

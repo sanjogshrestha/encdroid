@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mrpdaemon.android.encdroid;
+package org.mrpdaemon.android.encdroid.dropbox;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,6 +28,7 @@ import android.util.Log;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.exception.DropboxException;
+import org.mrpdaemon.android.encdroid.Logger;
 
 public class DropboxOutputStream extends OutputStream {
 

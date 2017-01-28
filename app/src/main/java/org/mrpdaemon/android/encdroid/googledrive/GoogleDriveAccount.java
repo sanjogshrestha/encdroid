@@ -16,11 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mrpdaemon.android.encdroid;
+package org.mrpdaemon.android.encdroid.googledrive;
 
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.mrpdaemon.android.encdroid.Account;
+import org.mrpdaemon.android.encdroid.EDApplication;
+import org.mrpdaemon.android.encdroid.Logger;
+import org.mrpdaemon.android.encdroid.R;
 import org.mrpdaemon.sec.encfs.EncFSFileProvider;
 
 import com.google.android.gms.auth.GoogleAuthException;

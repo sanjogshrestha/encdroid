@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mrpdaemon.android.encdroid;
+package org.mrpdaemon.android.encdroid.googledrive;
 
 import java.io.IOException;
 import java.io.OutputStream;

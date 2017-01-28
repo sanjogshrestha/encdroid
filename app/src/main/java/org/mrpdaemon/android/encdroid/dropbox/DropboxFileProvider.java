@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mrpdaemon.android.encdroid;
+package org.mrpdaemon.android.encdroid.dropbox;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mrpdaemon.android.encdroid.Logger;
 import org.mrpdaemon.sec.encfs.EncFSFileInfo;
 import org.mrpdaemon.sec.encfs.EncFSFileProvider;
 

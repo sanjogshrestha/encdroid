@@ -16,9 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mrpdaemon.android.encdroid;
+package org.mrpdaemon.android.encdroid.googledrive;
 
 import android.content.Context;
+import org.mrpdaemon.android.encdroid.Account;
+import org.mrpdaemon.android.encdroid.FileSystem;
+import org.mrpdaemon.android.encdroid.R;
 
 public class GoogleDriveFileSystem extends FileSystem {
 
